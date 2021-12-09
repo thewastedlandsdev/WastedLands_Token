@@ -685,7 +685,7 @@ contract WastedLands is Context, Ownable, IERC20 {
             uint256 realAmount = amount;
 
             if (
-                arbitrageFund > 0 &&
+                arbitrageFee > 0 &&
                 fromAddress != owner() &&
                 toAddress != owner() &&
                 !feeWhitelist[fromAddress] &&
