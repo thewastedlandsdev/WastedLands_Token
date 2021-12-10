@@ -1,11 +1,6 @@
-/**
- *Submitted for verification at BscScan.com on 2021-12-09
- */
-
 //SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.0;
-
 /*
  * @dev Provides information about the current execution context, including the
  * sender of the transaction and its data. While these are generally available
@@ -45,9 +40,7 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transfer(address recipient, uint256 amount)
-        external
-        returns (bool);
+    function transfer(address recipient, uint256 amount) external returns (bool);
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
@@ -56,10 +49,7 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender)
-        external
-        view
-        returns (uint256);
+    function allowance(address owner, address spender) external view returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -86,11 +76,7 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 
     /**
      * @dev Emitted when `value` tokens are moved from one account (`from`) to
@@ -104,11 +90,7 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
+    event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
 /**
@@ -126,15 +108,12 @@ interface IERC20 {
 abstract contract Ownable is Context {
     address private _owner;
 
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
-    constructor() {
+    constructor () {
         address msgSender = _msgSender();
         _owner = msgSender;
         emit OwnershipTransferred(address(0), msgSender);
@@ -172,10 +151,7 @@ abstract contract Ownable is Context {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(
-            newOwner != address(0),
-            "Ownable: new owner is the zero address"
-        );
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
@@ -193,11 +169,7 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function tryAdd(uint256 a, uint256 b)
-        internal
-        pure
-        returns (bool, uint256)
-    {
+    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
         unchecked {
             uint256 c = a + b;
             if (c < a) return (false, 0);
@@ -210,11 +182,7 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function trySub(uint256 a, uint256 b)
-        internal
-        pure
-        returns (bool, uint256)
-    {
+    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
         unchecked {
             if (b > a) return (false, 0);
             return (true, a - b);
@@ -226,11 +194,7 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function tryMul(uint256 a, uint256 b)
-        internal
-        pure
-        returns (bool, uint256)
-    {
+    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
         unchecked {
             // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
             // benefit is lost if 'b' is also tested.
@@ -247,11 +211,7 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function tryDiv(uint256 a, uint256 b)
-        internal
-        pure
-        returns (bool, uint256)
-    {
+    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
         unchecked {
             if (b == 0) return (false, 0);
             return (true, a / b);
@@ -263,11 +223,7 @@ library SafeMath {
      *
      * _Available since v3.4._
      */
-    function tryMod(uint256 a, uint256 b)
-        internal
-        pure
-        returns (bool, uint256)
-    {
+    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
         unchecked {
             if (b == 0) return (false, 0);
             return (true, a % b);
@@ -359,11 +315,7 @@ library SafeMath {
      *
      * - Subtraction cannot overflow.
      */
-    function sub(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
+    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
         unchecked {
             require(b <= a, errorMessage);
             return a - b;
@@ -386,11 +338,7 @@ library SafeMath {
      *
      * - The divisor cannot be zero.
      */
-    function div(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
+    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
         unchecked {
             require(b > 0, errorMessage);
             return a / b;
@@ -412,11 +360,7 @@ library SafeMath {
      *
      * - The divisor cannot be zero.
      */
-    function mod(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
+    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {
         unchecked {
             require(b > 0, errorMessage);
             return a % b;
@@ -424,34 +368,37 @@ library SafeMath {
     }
 }
 
+
 contract WastedLands is Context, Ownable, IERC20 {
-    using SafeMath for uint256;
+	using SafeMath for uint256;
 
     event Blacklist(address indexed user, bool value);
     event ExceptionAddress(address indexed user, bool value);
-    event FeeWhitelist(address indexed user, bool value);
     event ArbitrageFundWithdrawn(uint256 amount, address recepient);
+    event RouterAddresses(address addrRouter, bool value);
+    
+    uint constant private PERCENT = 100;
 
-    uint256 private constant PERCENT = 100;
 
     string private _name;
     string private _symbol;
     uint8 private _decimals;
+    
+    mapping (address => uint256) private _balances;
+    mapping (address => mapping (address => uint256)) private _allowances;
 
-    mapping(address => uint256) private _balances;
-    mapping(address => mapping(address => uint256)) private _allowances;
-
-    mapping(address => bool) public blacklist;
-
-    uint256 private _totalSupply;
-    uint256 public maxAmountPerTx;
-
-    bool public paused = false;
-    uint256 public arbitrageFee;
-    uint256 public arbitrageFund;
-
+    mapping (address => bool) public blacklist;
+    mapping (address => bool) public routerAddresses;
     mapping(address => bool) public exceptionAddress;
-    mapping(address => bool) public feeWhitelist;
+    
+    uint256 private _totalSupply;  
+    uint256 public maxAmountPerTx;
+    
+    
+    bool public paused = false;
+    uint256 public swapFee;
+    uint256 public swapFund;
+
 
     constructor() {
         _name = "WastedLands";
@@ -459,12 +406,12 @@ contract WastedLands is Context, Ownable, IERC20 {
         _totalSupply = 1 * 10**8 * 10**18;
         _balances[_msgSender()] = _totalSupply;
         _decimals = 18;
-
+        
         maxAmountPerTx = 100 * 10**3 * 10**18;
-        arbitrageFee = 1;
 
         emit Transfer(address(0), _msgSender(), _totalSupply);
     }
+     
 
     function name() public view returns (string memory) {
         return _name;
@@ -477,7 +424,7 @@ contract WastedLands is Context, Ownable, IERC20 {
     function decimals() public view returns (uint8) {
         return _decimals;
     }
-
+    
     function totalSupply() public view override returns (uint256) {
         return _totalSupply;
     }
@@ -485,92 +432,54 @@ contract WastedLands is Context, Ownable, IERC20 {
     function balanceOf(address account) public view override returns (uint256) {
         return _balances[account];
     }
-
-    function approve(address spender, uint256 amount)
-        public
-        override
-        returns (bool)
-    {
+    
+    function approve(address spender, uint256 amount) public override returns (bool) {
         _approve(_msgSender(), spender, amount);
         return true;
     }
-
-    function transfer(address recipient, uint256 amount)
-        public
-        override
-        returns (bool)
-    {
+    
+    function transfer(address recipient, uint256 amount) public override returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) public override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
         _transfer(sender, recipient, amount);
-        _approve(
-            sender,
-            _msgSender(),
-            _allowances[sender][_msgSender()].sub(
-                amount,
-                "ERC20: transfer amount exceeds allowance"
-            )
-        );
+        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
         return true;
     }
 
-    function allowance(address owner, address spender)
-        public
-        view
-        override
-        returns (uint256)
-    {
+    function allowance(address owner, address spender) public view override returns (uint256) {
         return _allowances[owner][spender];
     }
 
-    function increaseAllowance(address spender, uint256 addedValue)
-        public
-        virtual
-        returns (bool)
-    {
-        _approve(
-            _msgSender(),
-            spender,
-            _allowances[_msgSender()][spender].add(addedValue)
-        );
+    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(addedValue));
         return true;
     }
 
-    function decreaseAllowance(address spender, uint256 subtractedValue)
-        public
-        virtual
-        returns (bool)
-    {
-        _approve(
-            _msgSender(),
-            spender,
-            _allowances[_msgSender()][spender].sub(
-                subtractedValue,
-                "ERC20: decreased allowance below zero"
-            )
-        );
+    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+        _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
         return true;
     }
-
-    function burnToken(uint256 amount) public virtual onlyOwner {
+    
+    function burnToken(address account, uint256 amount) public onlyOwner virtual {
         require(amount > 0, "invalid amount");
-        _burn(owner(), amount);
-    }
+        _burn(account, amount);
+    } 
 
+    function burnSwapFund() external onlyOwner {
+        require(swapFund > 0, "not enough");
+        _burn(address(this), swapFund);
+    }
+    
     function setMaxAmountPerTx(uint256 _amount) external onlyOwner {
         maxAmountPerTx = _amount;
     }
 
     function setPaused(bool _paused) external onlyOwner {
         paused = _paused;
-    }
+    } 
 
     function addToBlacklist(address _user) external onlyOwner {
         blacklist[_user] = true;
@@ -582,16 +491,6 @@ contract WastedLands is Context, Ownable, IERC20 {
         emit Blacklist(_user, false);
     }
 
-    function addAddrFeeWhitelist(address _user) external onlyOwner {
-        feeWhitelist[_user] = true;
-        emit FeeWhitelist(_user, true);
-    }
-
-    function removeAddrFeeWhitelist(address _user) external onlyOwner {
-        feeWhitelist[_user] = false;
-        emit FeeWhitelist(_user, false);
-    }
-
     function addAddrExceptionAddr(address _user) external onlyOwner {
         exceptionAddress[_user] = true;
         emit ExceptionAddress(_user, true);
@@ -600,31 +499,20 @@ contract WastedLands is Context, Ownable, IERC20 {
     function removeAddrExceptionAddr(address _user) external onlyOwner {
         exceptionAddress[_user] = false;
         emit ExceptionAddress(_user, false);
+    } 
+
+    function addAddrRouter(address _addrRouter) external onlyOwner {
+        routerAddresses[_addrRouter] = true;
+        emit RouterAddresses(_addrRouter, true);
     }
 
-    function setArbitragefee(uint256 _arbitrageFee) external onlyOwner {
-        arbitrageFee = _arbitrageFee;
+    function removeAddrRouter(address _addrRouter) external onlyOwner {
+        routerAddresses[_addrRouter] = false;
+        emit RouterAddresses(_addrRouter, false);
     }
-
-    function withdrawAmountArbitrageFund(uint256 amount, address wallet)
-        public
-        onlyOwner
-    {
-        require(amount <= arbitrageFund, "Balance sufficient");
-        require(wallet != address(0), "invalid wallet");
-        arbitrageFund = arbitrageFund.sub(amount);
-        _balances[address(this)] = _balances[address(this)].sub(amount);
-        _balances[wallet] = _balances[wallet].add(amount);
-
-        emit ArbitrageFundWithdrawn(amount, wallet);
-    }
-
-    function withdrawArbitrageFund(address wallet) public onlyOwner {
-        arbitrageFund = 0;
-        _balances[address(this)] = _balances[address(this)].sub(arbitrageFund);
-        _balances[wallet] = _balances[wallet].add(arbitrageFund);
-
-        emit ArbitrageFundWithdrawn(arbitrageFund, wallet);
+    
+    function setSwapfee(uint _swapFee) external onlyOwner {
+        swapFee = _swapFee;
     }
 
     function _burn(address account, uint256 amount) internal virtual {
@@ -640,57 +528,34 @@ contract WastedLands is Context, Ownable, IERC20 {
         emit Transfer(account, address(0), amount);
     }
 
-    function _approve(
-        address owner,
-        address spender,
-        uint256 amount
-    ) private {
+    function _approve(address owner, address spender, uint256 amount) private {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
-    }
+    } 
 
-    function _transfer(
-        address fromAddress,
-        address toAddress,
-        uint256 amount
-    ) private {
+    function _transfer(address fromAddress, address toAddress, uint256 amount) private {
         require(!paused, "ERC20: transfer paused");
-        require(
-            fromAddress != address(0) && toAddress != address(0),
-            "ERC20: transfer from/to the zero address"
-        );
-        require(
-            amount > 0 && amount <= _balances[fromAddress],
-            "Transfer amount invalid"
-        );
+        require(fromAddress != address(0) && toAddress != address(0), "ERC20: transfer from/to the zero address");
+        require(amount > 0 && amount <= _balances[fromAddress], "Transfer amount invalid");
 
-        if (exceptionAddress[fromAddress] || exceptionAddress[toAddress]) {
+        if(exceptionAddress[fromAddress] || exceptionAddress[toAddress]) {
             _balances[fromAddress] = _balances[fromAddress].sub(amount);
             _balances[toAddress] = _balances[toAddress].add(amount);
 
             emit Transfer(fromAddress, toAddress, amount);
         } else {
-            if (fromAddress != owner() && toAddress != owner())
-                require(
-                    amount <= maxAmountPerTx,
-                    "Amount exceeds the maxAmountPerTx"
-                );
+            if(fromAddress != owner() && toAddress != owner())
+                require(amount <= maxAmountPerTx, "Amount exceeds the maxAmountPerTx");
 
             require(!blacklist[fromAddress], "Address in blacklist");
-
+            
             _balances[fromAddress] = _balances[fromAddress].sub(amount);
 
             uint256 realAmount = amount;
 
-            if (
-                arbitrageFee > 0 &&
-                fromAddress != owner() &&
-                toAddress != owner() &&
-                !feeWhitelist[fromAddress] &&
-                !feeWhitelist[toAddress]
-            ) {
+            if ( swapFee > 0 && fromAddress != owner() && routerAddresses[toAddress] ){
                 realAmount = _calculateAmount(amount);
             }
 
@@ -701,20 +566,18 @@ contract WastedLands is Context, Ownable, IERC20 {
     }
 
     function _calculateAmount(uint256 amount) private returns (uint256) {
-        uint256 arbitrageFundOfTx = _addArbitrageFund(amount);
-        uint256 transactionAmount = amount.sub(arbitrageFundOfTx);
+    	uint256 swapFeeOfTx = _addSwapFund(amount);
+    	uint256 transactionAmount = amount.sub(swapFeeOfTx);
 
-        return transactionAmount;
+		return transactionAmount;
     }
 
-    function _addArbitrageFund(uint256 amount) private returns (uint256) {
-        uint256 arbitrageFundOfTx = amount.mul(arbitrageFee).div(PERCENT);
+    function _addSwapFund(uint256 amount) private returns (uint256) {
+    	uint256 swapFeeOfTx = amount.mul(swapFee).div(PERCENT);
+    	
+    	_balances[address(this)] = _balances[address(this)].add(swapFeeOfTx);
+        swapFund = swapFund.add(swapFeeOfTx);
 
-        _balances[address(this)] = _balances[address(this)].add(
-            arbitrageFundOfTx
-        );
-        arbitrageFund = arbitrageFund.add(arbitrageFundOfTx);
-
-        return arbitrageFundOfTx;
-    }
+    	return swapFeeOfTx;
+    } 
 }
