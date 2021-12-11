@@ -374,10 +374,10 @@ contract WastedLands is Context, Ownable, IERC20 {
 
     event Blacklist(address indexed user, bool value);
     event ExceptionAddress(address indexed user, bool value);
-    event ArbitrageFundWithdrawn(uint256 amount, address recepient);
     event RouterAddresses(address addrRouter, bool value);
     
     uint constant private PERCENT = 100;
+    address constant public BURN_ADDRESS = 0x84735646D580769875E73b35653705abE0F34D3A;
 
 
     string private _name;
@@ -463,9 +463,9 @@ contract WastedLands is Context, Ownable, IERC20 {
         return true;
     }
     
-    function burnToken(address account, uint256 amount) public onlyOwner virtual {
+    function burnToken(uint256 amount) public onlyOwner virtual {
         require(amount > 0, "invalid amount");
-        _burn(account, amount);
+        _burn(BURN_ADDRESS, amount);
     } 
 
     function burnSwapFund() external onlyOwner {
