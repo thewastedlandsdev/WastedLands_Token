@@ -10,6 +10,8 @@ contract TokenWithdrawable is Ownable {
     using SafeERC20 for IERC20;
 
     mapping(address => bool) internal tokenBlacklist;
+    uint256 public swapFund;
+    uint256 public burnFund;
 
     event TokenWithdrawn(address token, uint256 amount, address to);
 
@@ -32,6 +34,12 @@ contract TokenWithdrawable is Ownable {
             !tokenBlacklist[address(token)],
             "TokenWithdrawable: blacklisted token"
         );
+        if (address(token) == address(this)) {
+            require(
+                token.balanceOf(address(this)) - amount >= swapFund + burnFund,
+                "sufficient funds"
+            );
+        }
         token.safeTransfer(to, amount);
         emit TokenWithdrawn(address(token), amount, to);
     }

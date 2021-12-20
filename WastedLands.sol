@@ -14,10 +14,11 @@ contract WastedLands is Context, Ownable, IERC20, TokenWithdrawable {
     event Blacklist(address indexed user, bool value);
     event ExceptionAddress(address indexed user, bool value);
     event RouterAddresses(address addrRouter, bool value);
+    event BurnFund(uint256 amount);
+    event TransferToBurnFund(uint256 amount);
+    event BurnSwapFund(uint256 amount);
 
     uint256 private constant PERCENT = 100;
-    address public constant BURN_ADDRESS =
-        0x84735646D580769875E73b35653705abE0F34D3A;
 
     string private _name;
     string private _symbol;
@@ -35,7 +36,6 @@ contract WastedLands is Context, Ownable, IERC20, TokenWithdrawable {
 
     bool public paused = false;
     uint256 public swapFee;
-    uint256 public swapFund;
 
     constructor() {
         _name = "WastedLands";
@@ -104,6 +104,17 @@ contract WastedLands is Context, Ownable, IERC20, TokenWithdrawable {
         return true;
     }
 
+    function transferToBurnFund(uint256 amount)
+        public
+        onlyOwner
+        returns (bool)
+    {
+        _transfer(_msgSender(), address(this), amount);
+        burnFund = burnFund.add(amount);
+        emit TransferToBurnFund(amount);
+        return true;
+    }
+
     function allowance(address owner, address spender)
         public
         view
@@ -142,14 +153,18 @@ contract WastedLands is Context, Ownable, IERC20, TokenWithdrawable {
         return true;
     }
 
-    function burnToken(uint256 amount) public virtual onlyOwner {
-        require(amount > 0, "invalid amount");
-        _burn(BURN_ADDRESS, amount);
+    function burnToken(uint256 amount) external onlyOwner {
+        require(amount > 0 && amount <= burnFund, "invalid amount");
+        _burn(address(this), amount);
+        burnFund = burnFund.sub(amount);
+        emit BurnFund(amount);
     }
 
-    function burnSwapFund() external onlyOwner {
+    function burnSwapFund(uint256 amount) external onlyOwner {
         require(swapFund > 0, "not enough");
         _burn(address(this), swapFund);
+        swapFund = swapFund.sub(amount);
+        emit BurnSwapFund(amount);
     }
 
     function setMaxAmountPerTx(uint256 _amount) external onlyOwner {
