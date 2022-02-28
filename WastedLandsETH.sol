@@ -5,11 +5,11 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./utils/TokenWithdrawable.sol";
 
-contract WastedLandsBSC is Context, Ownable, IERC20, TokenWithdrawable {
+contract WastedLandsETH is Context, IERC20, TokenWithdrawable, AccessControl {
     using SafeMath for uint256;
 
     event Blacklist(address indexed user, bool value);
@@ -37,16 +37,18 @@ contract WastedLandsBSC is Context, Ownable, IERC20, TokenWithdrawable {
 
     bool public paused = false;
     uint256 public swapFee;
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant CONTROLLER_ROLE = keccak256("CONTROLLER_ROLE");
 
     constructor() {
         _name = "WastedLands";
         _symbol = "WAL";
-        _totalSupply = 1 * 10**8 * 10**18;
+        _totalSupply = 0;
         _balances[_msgSender()] = _totalSupply;
         _decimals = 18;
 
         maxAmountPerTx = 100 * 10**3 * 10**18;
-
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         emit Transfer(address(0), _msgSender(), _totalSupply);
     }
 
@@ -68,6 +70,13 @@ contract WastedLandsBSC is Context, Ownable, IERC20, TokenWithdrawable {
 
     function balanceOf(address account) public view override returns (uint256) {
         return _balances[account];
+    }
+
+    function mint(address account, uint256 amount)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        _mint(account, amount);
     }
 
     function approve(address spender, uint256 amount)
@@ -107,7 +116,7 @@ contract WastedLandsBSC is Context, Ownable, IERC20, TokenWithdrawable {
 
     function transferToBurnFund(uint256 amount)
         public
-        onlyOwner
+        onlyRole(CONTROLLER_ROLE)
         returns (bool)
     {
         _transfer(_msgSender(), address(this), amount);
@@ -154,59 +163,86 @@ contract WastedLandsBSC is Context, Ownable, IERC20, TokenWithdrawable {
         return true;
     }
 
-    function burnToken(uint256 amount) external onlyOwner {
+    // pre-define burn token function for swap contract
+    function burn(address from, uint256 amount)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
+        require(amount > 0, "WAL: invalid amount");
+        _burn(from, amount);
+    }
+
+    function burnToken(uint256 amount) external onlyRole(CONTROLLER_ROLE) {
         require(amount > 0 && amount <= burnFund, "invalid amount");
         _burn(address(this), amount);
         burnFund = burnFund.sub(amount);
         emit BurnFund(amount);
     }
 
-    function burnSwapFund(uint256 amount) external onlyOwner {
+    function burnSwapFund(uint256 amount) external onlyRole(CONTROLLER_ROLE) {
         require(swapFund > 0, "not enough");
         _burn(address(this), amount);
         swapFund = swapFund.sub(amount);
         emit BurnSwapFund(amount);
     }
 
-    function setMaxAmountPerTx(uint256 _amount) external onlyOwner {
+    function setMaxAmountPerTx(uint256 _amount)
+        external
+        onlyRole(CONTROLLER_ROLE)
+    {
         maxAmountPerTx = _amount;
     }
 
-    function setPaused(bool _paused) external onlyOwner {
+    function setPaused(bool _paused) external onlyRole(CONTROLLER_ROLE) {
         paused = _paused;
     }
 
-    function addToBlacklist(address _user) external onlyOwner {
+    function addToBlacklist(address _user) external onlyRole(CONTROLLER_ROLE) {
         blacklist[_user] = true;
         emit Blacklist(_user, true);
     }
 
-    function removeFromBlacklist(address _user) external onlyOwner {
+    function removeFromBlacklist(address _user)
+        external
+        onlyRole(CONTROLLER_ROLE)
+    {
         blacklist[_user] = false;
         emit Blacklist(_user, false);
     }
 
-    function addAddrExceptionAddr(address _user) external onlyOwner {
+    function addAddrExceptionAddr(address _user)
+        external
+        onlyRole(CONTROLLER_ROLE)
+    {
         exceptionAddress[_user] = true;
         emit ExceptionAddress(_user, true);
     }
 
-    function removeAddrExceptionAddr(address _user) external onlyOwner {
+    function removeAddrExceptionAddr(address _user)
+        external
+        onlyRole(CONTROLLER_ROLE)
+    {
         exceptionAddress[_user] = false;
         emit ExceptionAddress(_user, false);
     }
 
-    function addAddrRouter(address _addrRouter) external onlyOwner {
+    function addAddrRouter(address _addrRouter)
+        external
+        onlyRole(CONTROLLER_ROLE)
+    {
         routerAddresses[_addrRouter] = true;
         emit RouterAddresses(_addrRouter, true);
     }
 
-    function removeAddrRouter(address _addrRouter) external onlyOwner {
+    function removeAddrRouter(address _addrRouter)
+        external
+        onlyRole(CONTROLLER_ROLE)
+    {
         routerAddresses[_addrRouter] = false;
         emit RouterAddresses(_addrRouter, false);
     }
 
-    function setSwapfee(uint256 _swapFee) external onlyOwner {
+    function setSwapfee(uint256 _swapFee) external onlyRole(CONTROLLER_ROLE) {
         swapFee = _swapFee;
     }
 
@@ -221,6 +257,14 @@ contract WastedLandsBSC is Context, Ownable, IERC20, TokenWithdrawable {
         _totalSupply -= amount;
 
         emit Transfer(account, address(0), amount);
+    }
+
+    function _mint(address account, uint256 amount) internal virtual {
+        require(account != address(0), "ERC20: mint to the zero address");
+
+        _totalSupply += amount;
+        _balances[account] += amount;
+        emit Transfer(address(0), account, amount);
     }
 
     function _approve(
